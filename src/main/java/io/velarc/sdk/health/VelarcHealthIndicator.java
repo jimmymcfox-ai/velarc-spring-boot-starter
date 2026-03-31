@@ -1,5 +1,6 @@
-package io.velarc.sdk.config;
+package io.velarc.sdk.health;
 
+import io.velarc.sdk.config.VelarcProperties;
 import io.velarc.sdk.sync.VelarcSyncService;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
