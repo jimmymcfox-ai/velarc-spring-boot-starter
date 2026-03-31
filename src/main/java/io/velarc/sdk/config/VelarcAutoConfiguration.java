@@ -11,7 +11,6 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,30 +56,17 @@ public class VelarcAutoConfiguration {
     }
 
     /**
-     * Provides a default {@link ObjectMapper} if none is available in the application context.
-     *
-     * @return a configured ObjectMapper
-     */
-    @Bean
-    @ConditionalOnMissingBean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
-
-    /**
      * Creates the sync service for fetching and caching SDK configuration.
      *
-     * @param objectMapper the Jackson mapper
      * @return the sync service
      */
     @Bean
-    public VelarcSyncService velarcSyncService(ObjectMapper objectMapper) {
+    public VelarcSyncService velarcSyncService() {
         return new VelarcSyncService(
                 properties.getEndpoint(),
                 properties.getApiKey(),
                 properties.getCache().getPath(),
-                objectMapper);
+                velarcObjectMapper());
     }
 
     /**
@@ -112,13 +98,17 @@ public class VelarcAutoConfiguration {
     /**
      * Creates the main Velarc client for interacting with the proxy.
      *
-     * @param syncService  the sync service
-     * @param objectMapper the Jackson mapper
+     * @param syncService the sync service
      * @return the Velarc client
      */
     @Bean
-    public VelarcClient velarcClient(VelarcSyncService syncService, ObjectMapper objectMapper) {
-        return new VelarcClient(syncService, properties, objectMapper);
+    public VelarcClient velarcClient(VelarcSyncService syncService) {
+        return new VelarcClient(syncService, properties, velarcObjectMapper());
+    }
+
+    private ObjectMapper velarcObjectMapper() {
+        return new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     /**
