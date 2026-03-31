@@ -40,7 +40,7 @@ class VelarcClientTest {
               "response_text": "Hello there!",
               "provider": "openai",
               "model": "gpt-4o",
-              "raw_provider_response": "{\\"id\\":\\"abc\\"}",
+              "provider_response": {"id": "abc"},
               "tokens_in": 10,
               "tokens_out": 5
             }
