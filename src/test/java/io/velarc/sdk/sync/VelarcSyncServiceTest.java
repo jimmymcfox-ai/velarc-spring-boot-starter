@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.mockito.ArgumentCaptor;
+
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -19,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings("unchecked")
@@ -190,6 +193,24 @@ class VelarcSyncServiceTest {
         assertThat(service.getUseCaseDefinition("summarise")).isEmpty();
         assertThat(service.getUserDefinition("u-001")).isEmpty();
         assertThat(service.getBusinessObjectTypeDefinition("order")).isEmpty();
+    }
+
+    @Test
+    void secondSyncSendsIfNoneMatchHeader() throws Exception {
+        mockResponse(200, SYNC_RESPONSE_JSON);
+        service.sync();
+
+        mockResponse(304, "");
+        service.sync();
+
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
+        verify(httpClient, org.mockito.Mockito.times(2))
+                .send(captor.capture(), any(HttpResponse.BodyHandler.class));
+
+        HttpRequest secondRequest = captor.getAllValues().get(1);
+        assertThat(secondRequest.headers().firstValue("If-None-Match"))
+                .isPresent()
+                .hasValue("5");
     }
 
     @Test
