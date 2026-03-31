@@ -57,6 +57,10 @@ Use Java records for immutable data carriers (DTOs, value objects) where appropr
 
 Update README.md when public API surface changes.
 
+## Javadoc
+
+All public classes and public methods must have Javadoc. This is a public library — the Javadoc is part of the API contract. Package-private and private members do not require Javadoc unless the logic is non-obvious.
+
 ## License
 
 By contributing, you agree that your contributions will be licensed under the Apache License, Version 2.0.
