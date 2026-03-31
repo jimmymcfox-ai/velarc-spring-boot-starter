@@ -33,6 +33,10 @@ Run mvn verify in the background (it may exceed bash timeout). Check the output 
 
 Every code change must include appropriate tests. Unit tests for all classes with logic. Integration tests where Spring context wiring matters. No code lands without tests.
 
+## What To Test
+
+Test logic and design decisions, not language features. Constructor field assignment, getter return values, and trivial record accessors do not need tests. Inheritance checks (e.g. checked vs unchecked exception hierarchy) are worth testing because they verify deliberate design decisions.
+
 ## Java Version
 
 Source and target: Java 17. Do not use Java 21+ features.
