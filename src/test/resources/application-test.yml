@@ -1,0 +1,9 @@
+velarc:
+  endpoint: https://test.velarc.io
+  api-key: test-api-key
+  startup:
+    require-sync: false
+  cache:
+    path: ./target/test-velarc-cache.json
+  sync:
+    interval: 60s
