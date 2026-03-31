@@ -1,5 +1,6 @@
 package io.velarc.sdk.sync;
 
+import io.velarc.sdk.exception.VelarcConfigException;
 import io.velarc.sdk.exception.VelarcServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,9 @@ public class VelarcSyncScheduler {
     public boolean performStartupSync() {
         try {
             syncService.sync();
+        } catch (VelarcConfigException e) {
+            log.error("Startup sync failed due to configuration error, attempting disk cache: {}", e.getMessage());
+            syncService.loadFromDisk();
         } catch (VelarcServiceException e) {
             log.warn("Startup sync failed, attempting disk cache: {}", e.getMessage());
             syncService.loadFromDisk();
@@ -84,7 +88,9 @@ public class VelarcSyncScheduler {
     private void refreshSync() {
         try {
             syncService.sync();
-        } catch (VelarcServiceException e) {
+        } catch (VelarcConfigException e) {
+            log.error("Periodic sync failed due to configuration error: {}", e.getMessage());
+        } catch (Exception e) {
             log.warn("Periodic sync failed: {}", e.getMessage());
         }
     }

@@ -1,11 +1,13 @@
 package io.velarc.sdk.sync;
 
+import io.velarc.sdk.exception.VelarcConfigException;
 import io.velarc.sdk.exception.VelarcServiceException;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -48,6 +50,33 @@ class VelarcSyncSchedulerTest {
         VelarcSyncScheduler scheduler = new VelarcSyncScheduler(syncService, Duration.ofSeconds(60));
 
         assertThat(scheduler.performStartupSync()).isFalse();
+    }
+
+    @Test
+    void performStartupSyncFallsToDiskCacheWhenConfigException() throws Exception {
+        doThrow(new VelarcConfigException("Invalid or expired API key (HTTP 401)"))
+                .when(syncService).sync();
+        when(syncService.isReady()).thenReturn(true);
+
+        VelarcSyncScheduler scheduler = new VelarcSyncScheduler(syncService, Duration.ofSeconds(60));
+
+        assertThat(scheduler.performStartupSync()).isTrue();
+        verify(syncService).loadFromDisk();
+    }
+
+    @Test
+    void periodicRefreshSurvivesConfigException() throws Exception {
+        doThrow(new VelarcConfigException("Invalid or expired API key (HTTP 401)"))
+                .when(syncService).sync();
+
+        VelarcSyncScheduler scheduler = new VelarcSyncScheduler(syncService, Duration.ofMillis(50));
+        try {
+            scheduler.start();
+            Thread.sleep(200);
+            verify(syncService, atLeast(2)).sync();
+        } finally {
+            scheduler.stop();
+        }
     }
 
     @Test
