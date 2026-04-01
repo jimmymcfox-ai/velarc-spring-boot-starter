@@ -281,12 +281,11 @@ public class VelarcClient {
         if (status == 502) {
             try {
                 Map<String, Object> error = objectMapper.readValue(responseBody, Map.class);
-                String providerName = (String) error.get("provider_name");
-                String providerErrorCode = (String) error.get("provider_error_code");
-                String providerMessage = (String) error.get("provider_message");
+                String errorCode = (String) error.get("error");
+                String message = (String) error.get("message");
                 throw new VelarcProviderException(
-                        "Provider error from " + providerName, providerName,
-                        providerErrorCode, providerMessage);
+                        "Provider error: " + message, null,
+                        errorCode, message);
             } catch (VelarcProviderException e) {
                 throw e;
             } catch (Exception e) {

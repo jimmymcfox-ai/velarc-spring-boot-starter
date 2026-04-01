@@ -190,9 +190,8 @@ class VelarcClientTest {
     void response502ThrowsProviderException() throws Exception {
         mockResponse(502, """
                 {
-                  "provider_name": "openai",
-                  "provider_error_code": "rate_limit",
-                  "provider_message": "Rate limit exceeded"
+                  "error": "rate_limit",
+                  "message": "Rate limit exceeded"
                 }
                 """);
 
@@ -200,8 +199,9 @@ class VelarcClientTest {
                 .isInstanceOf(VelarcProviderException.class)
                 .satisfies(ex -> {
                     VelarcProviderException pe = (VelarcProviderException) ex;
-                    assertThat(pe.getProviderName()).isEqualTo("openai");
+                    assertThat(pe.getProviderName()).isNull();
                     assertThat(pe.getProviderErrorCode()).isEqualTo("rate_limit");
+                    assertThat(pe.getProviderMessage()).isEqualTo("Rate limit exceeded");
                 });
     }
 
