@@ -226,7 +226,7 @@ public class VelarcClient {
                                                   String model, String providerApiKey,
                                                   List<Message> messages) {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("use_case_code", request.useCase());
+        body.put("use_case", request.useCase());
         body.put("user_key", request.user());
         body.put("messages", messages);
         body.put("provider", provider);

@@ -85,7 +85,7 @@ class VelarcClientTest {
         assertThat(response.tokensOut()).isEqualTo(5);
 
         Map<String, Object> body = captureRequestBody();
-        assertThat(body.get("use_case_code")).isEqualTo("summarise");
+        assertThat(body.get("use_case")).isEqualTo("summarise");
         assertThat(body.get("user_key")).isEqualTo("u-001");
         assertThat(body.get("provider")).isEqualTo("openai");
         assertThat(body.get("model")).isEqualTo("gpt-4o");
