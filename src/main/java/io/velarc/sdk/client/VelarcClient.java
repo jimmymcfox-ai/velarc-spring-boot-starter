@@ -283,8 +283,9 @@ public class VelarcClient {
                 Map<String, Object> error = objectMapper.readValue(responseBody, Map.class);
                 String errorCode = (String) error.get("error");
                 String message = (String) error.get("message");
+                String providerName = (String) error.get("provider");
                 throw new VelarcProviderException(
-                        "Provider error: " + message, null,
+                        "Provider error: " + message, providerName,
                         errorCode, message);
             } catch (VelarcProviderException e) {
                 throw e;
